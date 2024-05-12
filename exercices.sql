@@ -92,26 +92,97 @@ WHERE
     h.nom = 'Panoramix';
 
 --11. Liste des potions (libellés) absorbées par Homéopatix. (2 lignes)
+SELECT
+    p.lib_potion
+FROM
+    potion p
+    JOIN absorber a ON p.num_potion = a.num_potion
+    JOIN habitant h ON a.num_hab = h.num_hab
+WHERE
+    h.nom = 'Homéopatix';
 
 --12. Liste des habitants (noms) ayant absorbé une potion fabriquée par l'habitant numéro 3. (4 lignes)
+SELECT
+    h.nom
+FROM
+    habitant h
+    JOIN absorber a ON h.num_hab = a.num_hab
+    JOIN fabriquer f ON a.num_potion = f.num_potion
+WHERE
+    f.num_hab = 3;
 
 --13. Liste des habitants (noms) ayant absorbé une potion fabriquée par Amnésix. (7 lignes)
+SELECT
+    h.nom
+FROM
+    habitant h
+    JOIN absorber a ON h.num_hab = a.num_hab
+    JOIN fabriquer f ON a.num_potion = f.num_potion
+    JOIN habitant h_fab ON f.num_hab = h_fab.num_hab
+WHERE
+    h_fab.nom = 'Amnésix';
 
 --14. Nom des habitants dont la qualité n'est pas renseignée. (2 lignes)
+SELECT
+    nom
+FROM
+    habitant
+WHERE
+    num_qualite IS NULL;
 
 --15. Nom des habitants ayant consommé la Potion magique n°1 (c'est le libellé de lapotion) en février 52. (3 lignes)
-
---16. Nom et âge des habitants par ordre alphabétique. (22 lignes)
+SELECT
+    h.nom
+FROM
+    habitant h
+    JOIN absorber a ON h.num_hab = a.num_hab
+    JOIN potion p ON a.num_potion = p.num_potion
+WHERE
+    p.lib_potion = 'Potion magique n°1'
+    AND a.date_a BETWEEN '2052-02-01' AND '2052-02-29'
+    --16. Nom et âge des habitants par ordre alphabétique. (22 lignes)
+SELECT
+    nom,
+    age
+FROM
+    habitant
+ORDER BY
+    nom ASC;
 
 --17. Liste des resserres classées de la plus grande à la plus petite : nom de resserre et nom du village. (3 lignes)
-
---***
+SELECT
+    r.nom_resserre,
+    v.nom_village
+FROM
+    resserre r
+    JOIN village v ON r.num_village = v.num_village
+ORDER BY
+    r.superficie DESC;
 
 --18. Nombre d'habitants du village numéro 5. (4)
+SELECT
+    COUNT(*) AS nombre_habitants
+FROM
+    habitant
+WHERE
+    num_village = 5;
 
 --19. Nombre de points gagnés par Goudurix. (5)
+SELECT
+    SUM(c.nb_points) AS nombre_points_gagnes
+FROM
+    habitant h
+    JOIN trophee t ON h.num_hab = t.num_preneur
+    JOIN categorie c ON t.code_cat = c.code_cat
+WHERE
+    h.nom = 'Goudurix';
 
 --20. Date de première prise de trophée. (03/04/52)
+SELECT
+    MIN(date_prise) AS date_premiere_prise
+FROM
+    trophee;
+
 
 --21. Nombre de louches de Potion magique n°2 (c'est le libellé de la potion) absorbées. (19)
 
