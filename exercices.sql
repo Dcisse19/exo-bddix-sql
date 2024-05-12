@@ -183,28 +183,121 @@ SELECT
 FROM
     trophee;
 
-
 --21. Nombre de louches de Potion magique n°2 (c'est le libellé de la potion) absorbées. (19)
+SELECT
+    SUM(quantite) AS nombre_de_louches
+FROM
+    absorber a
+    JOIN potion p ON a.num_potion = p.num_potion
+WHERE
+    p.lib_potion = 'Potion magique n°2';
 
 --22. Superficie la plus grande. (895)
-
---***
+SELECT
+    MAX(superficie) AS superficie_maximale
+FROM
+    resserre;
 
 --23. Nombre d'habitants par village (nom du village, nombre). (7 lignes)
+SELECT
+    v.nom_village,
+    COUNT(h.num_hab) AS nombre_habitants
+FROM
+    village v
+    JOIN habitant h ON v.num_village = h.num_village
+GROUP BY
+    v.nom_village;
 
 --24. Nombre de trophées par habitant (6 lignes)
+SELECT
+    h.nom AS nom_habitant,
+    COUNT(t.num_trophee) AS nombre_de_trophees
+FROM
+    habitant h
+    JOIN trophee t ON h.num_hab = t.num_preneur
+WHERE
+    t.num_trophee > 0
+GROUP BY
+    h.nom;
 
 --25. Moyenne d'âge des habitants par province (nom de province, calcul). (3 lignes)
+SELECT
+    p.nom_province,
+    AVG(h.age) AS moyenne_age
+FROM
+    habitant h
+    JOIN village v ON h.num_village = v.num_village
+    JOIN province p ON v.num_province = p.num_province
+GROUP BY
+    p.nom_province;
 
 --26. Nombre de potions différentes absorbées par chaque habitant (nom et nombre). (9lignes)
-
+SELECT
+    h.nom AS nom_habitant,
+    COUNT(a.num_potion) AS nombre_de_potions_differentes
+FROM
+    habitant h
+    JOIN absorber a ON h.num_hab = a.num_hab
+    JOIN potion p ON a.num_potion = p.num_potion
+GROUP BY
+    h.nom;
 
 --27. Nom des habitants ayant bu plus de 2 louches de potion zen. (1 ligne)
+SELECT
+    h.nom
+FROM
+    habitant h
+    JOIN absorber a ON h.num_hab = a.num_hab
+    JOIN potion p ON a.num_potion = p.num_potion
+WHERE
+    p.lib_potion = 'Potion Zen'
+    AND a.quantite > 2;
 
-
---***
 --28. Noms des villages dans lesquels on trouve une resserre (3 lignes)
+SELECT
+    v.nom_village
+FROM
+    village v
+    JOIN resserre r ON v.num_village = r.num_village;
 
 --29. Nom du village contenant le plus grand nombre de huttes. (Gergovie)
+SELECT
+    nom_village
+FROM
+    village
+WHERE
+    num_village = (
+        SELECT
+            num_village
+        FROM
+            village
+        ORDER BY
+            nb_huttes DESC
+        LIMIT
+            1
+    );
 
 --30. Noms des habitants ayant pris plus de trophées qu'Obélix (3 lignes).
+SELECT
+    h.nom
+FROM
+    habitant h
+    JOIN (
+        SELECT
+            num_preneur,
+            COUNT(*) AS nombre_trophees
+        FROM
+            trophee
+        GROUP BY
+            num_preneur
+    ) t ON h.num_hab = t.num_preneur
+    JOIN habitant o ON o.nom = 'Obélix'
+WHERE
+    t.nombre_trophees > (
+        SELECT
+            COUNT(*)
+        FROM
+            trophee
+        WHERE
+            num_preneur = o.num_hab
+    );
